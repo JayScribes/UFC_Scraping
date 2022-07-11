@@ -1,0 +1,221 @@
+
+  
+  ## Loading Libraries
+  ```{r}
+library(rvest)
+library(tidyverse)
+```
+
+## Creating Links + Front Page Scraping
+```{r}
+link = ("http://ufcstats.com/statistics/events/completed")
+
+page = read_html(link)
+
+Event_Title = page %>% 
+  html_nodes(".b-link") %>% 
+  html_text()
+
+
+Event_Date = page %>% 
+  html_nodes(".b-statistics__date") %>% 
+  html_text()
+
+
+Event_Location = page %>% 
+  html_nodes(".b-statistics__table-col_style_big-top-padding") %>% 
+  html_text()
+
+ufc_links = page %>% 
+  html_nodes(".b-link") %>% 
+  html_attr("href")
+```
+
+## Creating Nested Scraping Functions - Main Page
+```{r}
+get_fightera = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  fighter_a = ufc_page %>% html_nodes(".b-fight-details__table-text:nth-child(1) .b-link_style_black") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(fighter_a)
+}
+
+get_fightersb = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  fighter_b = ufc_page %>% html_nodes(".b-fight-details__table-text+ .b-fight-details__table-text .b-link_style_black") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(fighter_b)
+}
+
+get_kdA = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  kdA = ufc_page %>% html_nodes(".b-fight-details__table-col:nth-child(3) .b-fight-details__table-text:nth-child(1)") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(kdA)
+}
+
+get_kdB = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  kdB = ufc_page %>% html_nodes(".b-fight-details__table-col:nth-child(3) .b-fight-details__table-text+ .b-fight-details__table-text") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(kdB)
+}
+
+get_strA = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  strA = ufc_page %>% html_nodes(".b-fight-details__table-col:nth-child(4) .b-fight-details__table-text:nth-child(1)") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(strA)
+}
+
+get_strB = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  strB = ufc_page %>% html_nodes(".b-fight-details__table-col:nth-child(4) .b-fight-details__table-text+ .b-fight-details__table-text") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(strB)
+}
+
+get_TDa = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  TDa = ufc_page %>% html_nodes(".b-fight-details__table-col:nth-child(5) .b-fight-details__table-text:nth-child(1)") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(TDa)
+}
+
+get_SubA = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  SubA = ufc_page %>% html_nodes(".b-fight-details__table-col:nth-child(6) .b-fight-details__table-text:nth-child(1)") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(SubA)
+}
+
+get_SubB = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  SubB = ufc_page %>% html_nodes(".b-fight-details__table-col:nth-child(6) .b-fight-details__table-text+ .b-fight-details__table-text") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(SubB)
+}
+
+get_TDb = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  TDb = ufc_page %>% html_nodes(".b-fight-details__table-col:nth-child(5) .b-fight-details__table-text+ .b-fight-details__table-text") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(TDb)
+}
+
+get_weight = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  weight = ufc_page %>% html_nodes(".l-page_align_left:nth-child(7) .b-fight-details__table-text") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(weight)
+}
+
+get_method = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  method = ufc_page %>% html_nodes(".l-page_align_left+ .l-page_align_left .b-fight-details__table-text") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(method)
+}
+
+get_round = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  round = ufc_page %>% html_nodes(".b-fight-details__table-col:nth-child(9) .b-fight-details__table-text") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(round)
+}
+
+get_end_time = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  end_time = ufc_page %>% html_nodes(".b-fight-details__table-col:nth-child(10) .b-fight-details__table-text") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(end_time)
+}
+
+get_end_time = function(page_link) {
+  ufc_page = read_html(page_link)
+  ufc_page = read_html(page_link)
+  end_time = ufc_page %>% html_nodes(".b-fight-details__table-col:nth-child(10) .b-fight-details__table-text") %>% 
+    html_text() %>%  paste(collapse = ",")
+  return(end_time)
+}
+```
+
+## For Loops Scraping - Event Page
+```{r}
+
+ufc_links = page %>% 
+  html_nodes(".b-link") %>% 
+  html_attr("href")
+
+fights <- data.frame()
+
+for (page_result in seq(from = 1, to = 1, by = 1)) {
+  link = paste0("http://ufcstats.com/statistics/events/completed?page=",page_result)
+  
+  page = read_html(link)
+  
+  
+  Event_Title = page %>% 
+    html_nodes(".b-link") %>% 
+    html_text()
+  
+  
+  Event_Date = page %>% 
+    html_nodes(".b-statistics__date") %>% 
+    html_text()
+  
+  
+  Event_Location = page %>% 
+    html_nodes(".b-statistics__table-col_style_big-top-padding") %>% 
+    html_text()
+  
+  
+  fighterA = sapply(ufc_links, FUN = get_fightera)
+  fighterB = sapply(ufc_links, FUN = get_fightersb)
+  kdA = sapply(ufc_links, FUN = get_kdA)
+  kdB = sapply(ufc_links, FUN = get_kdB)
+  end_time = sapply(ufc_links, FUN = get_end_time)
+  method = sapply(ufc_links, FUN = get_method)
+  round = sapply(ufc_links, FUN = get_round)
+  STRa = sapply(ufc_links, FUN = get_strA)
+  STRb = sapply(ufc_links, FUN = get_strB)
+  SubA = sapply(ufc_links, FUN = get_SubA)
+  SubB = sapply(ufc_links, FUN = get_SubB)
+  TDa = sapply(ufc_links, FUN = get_TDa)
+  TDb = sapply(ufc_links, FUN = get_TDb)
+  weight = sapply(ufc_links, FUN = get_weight)
+  
+  fights <- rbind(fights, data.frame( Event_Title, Event_Date, Event_Location, fighterA, fighterB, kdA, kdB, end_time, method, round, STRa, STRb, SubA, SubB, TDa, TDb, weight))
+  
+  print(paste("Page:", page_result))  
+}
+```
+
+## Cleaning Final Data Set
+```{r}
+
+fights.new <- fights
+
+fights.new$outlier = fights.new$kdA == ""    
+fights.new = filter(fights.new, outlier != TRUE)
+fights.new <- subset(fights.new, , -c(outlier))
+
+Fight_Clean <- data.frame()
+Fight_Clean <- separate_rows(fights.new, fighterA, fighterB, kdA, kdB, end_time, round, STRa, STRb, SubA, SubB, TDa, TDb, weight, sep = ",", convert = TRUE)
+
+```
+

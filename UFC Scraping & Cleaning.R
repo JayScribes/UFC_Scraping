@@ -1,9 +1,12 @@
-
-  
   ## Loading Libraries
-  ```{r}
+  
+ ```{r}
+install.packages("rvest")
+install.packages("tidyverse")
+install.packages("rio")
 library(rvest)
 library(tidyverse)
+library(rio)
 ```
 
 ## Creating Links + Front Page Scraping
@@ -124,7 +127,7 @@ get_weight = function(page_link) {
 get_method = function(page_link) {
   ufc_page = read_html(page_link)
   ufc_page = read_html(page_link)
-  method = ufc_page %>% html_nodes(".l-page_align_left+ .l-page_align_left .b-fight-details__table-text") %>% 
+  method = ufc_page %>% html_nodes(".l-page_align_left+ .l-page_align_left .b-fight-details__table-text:nth-child(1)") %>% 
     html_text() %>%  paste(collapse = ",")
   return(method)
 }
@@ -163,7 +166,7 @@ ufc_links = page %>%
 
 fights <- data.frame()
 
-for (page_result in seq(from = 1, to = 1, by = 1)) {
+for (page_result in seq(from = 1, to = 24, by = 1)) {
   link = paste0("http://ufcstats.com/statistics/events/completed?page=",page_result)
   
   page = read_html(link)
@@ -215,7 +218,32 @@ fights.new = filter(fights.new, outlier != TRUE)
 fights.new <- subset(fights.new, , -c(outlier))
 
 Fight_Clean <- data.frame()
-Fight_Clean <- separate_rows(fights.new, fighterA, fighterB, kdA, kdB, end_time, round, STRa, STRb, SubA, SubB, TDa, TDb, weight, sep = ",", convert = TRUE)
+Fight_Clean <- separate_rows(fights.new, fighterA, method, fighterB, kdA, kdB, end_time, round, STRa, STRb, SubA, SubB, TDa, TDb, weight, sep = ",", convert = TRUE) 
+
 
 ```
 
+## Polishing DF
+```{r}
+Fight_Clean$Event_Title <- trimws(Fight_Clean$Event_Title, which =c("both"))
+Fight_Clean$Event_Location <- trimws(Fight_Clean$Event_Location, which =c("both"))
+Fight_Clean$Event_Date <- trimws(Fight_Clean$Event_Date, which =c("both"))
+Fight_Clean$fighterA <- trimws(Fight_Clean$fighterA, which =c("both"))
+Fight_Clean$fighterB <- trimws(Fight_Clean$fighterB, which =c("both"))
+Fight_Clean$kdA <- trimws(Fight_Clean$kdA, which =c("both"))
+Fight_Clean$kdB <- trimws(Fight_Clean$kdB, which =c("both"))
+Fight_Clean$end_time <- trimws(Fight_Clean$end_time, which =c("both"))
+Fight_Clean$method <- trimws(Fight_Clean$method, which =c("both"))
+Fight_Clean$round <- trimws(Fight_Clean$round, which =c("both"))
+Fight_Clean$STRa <- trimws(Fight_Clean$STRa, which =c("both"))
+Fight_Clean$STRb <- trimws(Fight_Clean$STRb, which =c("both"))
+Fight_Clean$SubA <- trimws(Fight_Clean$SubA, which =c("both"))
+Fight_Clean$SubB <- trimws(Fight_Clean$SubB, which =c("both"))
+Fight_Clean$TDa <- trimws(Fight_Clean$TDa, which =c("both"))
+Fight_Clean$TDb <- trimws(Fight_Clean$TDb, which =c("both"))
+Fight_Clean$weight <- trimws(Fight_Clean$weight, which =c("both"))
+
+Fight_Clean$Event_Date <- as.Date(Fight_Clean$Event_Date)
+
+export(Fight_Clean, "UFC_Fights.csv")
+```
